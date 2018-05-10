@@ -48,9 +48,8 @@ Transaction.start = (data) => {
   return new Proxy(data, {
     get(target, key) {
       if (typeof target[key] === 'object' || typeof target[key] === 'function' && target[key] !== null) {
-        const index = JSON.stringify(target[key]) + key.toString();
-        if (innerTransaction[index]) return innerTransaction[index];
-         return innerTransaction[index] = Transaction.start(target[key]);
+        if (innerTransaction[key]) return innerTransaction[key];
+         return innerTransaction[key] = Transaction.start(target[key]);
       }
       if (key === 'delta') return delta;
       if (key === 'deleted') return deleted;
@@ -96,28 +95,28 @@ function DatasetTransaction(dataset) {
 
 DatasetTransaction.start = function(dataset) {
 	return new DatasetTransaction(dataset);
-}
+};
 
 DatasetTransaction.prototype.commit = function() {
 	this.proxy.commit();
-}
+};
 
 DatasetTransaction.prototype.rollback = function() {
   this.proxy.rollback();
-}
+};
 
 DatasetTransaction.prototype.add = function(dataset) {
   const transactions = [];
   if (dataset.isArray) dataset.forEach(data => transactions.push(Transaction.start(data)));
   else transactions.push(Transaction.start(dataset));
   transactions.forEach(transaction => this.dataset.push(transaction));
-}
+};
 
 DatasetTransaction.prototype.delete = function(index) {
   if (this.dataset.length < index) return false;
   delete this.dataset[index];
   return true;
-}
+};
 
 //Usage
 
@@ -134,18 +133,18 @@ for (const person of transaction.dataset) {
   delete person.born;
 }
 
-transaction.add({ city: 'Hanoi' })
+transaction.add({ city: 'Hanoi' });
 transaction.delete(0);
-transaction.dataset[1].name.name = 'Tin'
+transaction.dataset[1].name.name = 'Tin';
 transaction.dataset[1].name.info.city = 'Odessa';
-delete transaction.dataset[1].name.info.city;
+delete transaction.dataset[1].name.info.language;
 
 console.dir({ data });
-console.log(data[1].name)
+console.log(data[1].name);
 
 
 // transaction.rollback();
 transaction.commit();
 
 console.dir({ data });
-console.log(data[1].name)
+console.log(data[1].name);
