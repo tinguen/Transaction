@@ -49,7 +49,7 @@ Transaction.start = (data) => {
     get(target, key) {
       if (typeof target[key] === 'object' || typeof target[key] === 'function' && target[key] !== null) {
         if (innerTransaction[key]) return innerTransaction[key];
-         return innerTransaction[key] = Transaction.start(target[key]);
+        return innerTransaction[key] = Transaction.start(target[key]);
       }
       if (key === 'delta') return delta;
       if (key === 'deleted') return deleted;
