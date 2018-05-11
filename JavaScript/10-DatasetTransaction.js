@@ -2,6 +2,9 @@ function Transaction() {}
 
 Transaction.start = (data) => {
   console.log('\nstart transaction');
+
+  if (typeof data !== 'object' && typeof data !== 'function') data = { data };
+
   const events = {
     commit: [], rollback: [], timeout: [], change: []
   };
@@ -94,7 +97,8 @@ function DatasetTransaction(dataset) {
 }
 
 DatasetTransaction.start = function(dataset) {
-	return new DatasetTransaction(dataset);
+	if (typeof dataset !== 'object' && typeof dataset !== 'function') dataset = { data: dataset };
+  return new DatasetTransaction(dataset);
 };
 
 DatasetTransaction.prototype.commit = function() {
@@ -123,7 +127,7 @@ DatasetTransaction.prototype.delete = function(index) {
 const data = [
   { name: 'Marcus Aurelius', born: 121 },
   { name: { name: 'Marcus', info: { city: 'Kyiv', language: 'JS' } }, born: 121 },
-  { name: 'Marcus Aurelius', born: 121 },
+  { name: 'Marcus Aurelius', born: 121 }
 ];
 
 const transaction = DatasetTransaction.start(data);
@@ -134,6 +138,7 @@ for (const person of transaction.dataset) {
 }
 
 transaction.add({ city: 'Hanoi' });
+transaction.add(1);
 transaction.delete(0);
 transaction.dataset[1].name.name = 'Tin';
 transaction.dataset[1].name.info.city = 'Odessa';
